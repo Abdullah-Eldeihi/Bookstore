@@ -66,6 +66,6 @@ app.get("*", (req, res) => {
 });
 
 // Listen on port 3000
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log("Starting website on port 3000.");
 });
