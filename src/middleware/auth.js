@@ -24,7 +24,7 @@ const auth = async (req, res, next) => {
 const authAdmin = (req, res, next) => {
   auth(req, res, () => {
     if (!req.user.isAdmin) {
-      res.status(403).send({ error: "User is not an admin." });
+      res.status(403).send();
       return;
     }
     next();
@@ -33,7 +33,7 @@ const authAdmin = (req, res, next) => {
 const authAndSameIdOrAdmin = (req, res, next) => {
   auth(req, res, () => {
     if (!req.user._id.equals(req.params.id) && !req.user.isAdmin) {
-      return res.status(403).send({ error: "No permission" });
+      return res.status(403).send();
     }
     next();
   });

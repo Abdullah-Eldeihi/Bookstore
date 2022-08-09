@@ -18,21 +18,53 @@ router.get("/:id", authAndSameIdOrAdmin, async (req, res) => {
   }
 });
 
-router.get("/me/cart", auth, (req, res) => {});
+router.patch("/:id", authAndSameIdOrAdmin, async (req, res) => {
+  if (req.body.isAdmin) {
+    if (req.body.adminCode !== "Thisissupersecret") {
+      return res.status(403).send();
+    } else {
+      delete req.body.adminCode;
+    }
+  }
+  const updates = Object.keys(req.body);
+  const allowedUpdates = [
+    "first_name",
+    "last_name",
+    "email",
+    "password",
+    "phone_number",
+    "country",
+    "city",
+    "birth_year",
+    "birth_month",
+    "birth_day",
+    "address_line",
+    "gender",
+    "isAdmin",
+  ];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
 
-router.get("/me/orders", auth, (req, res) => {});
-router.post("/me/logout", auth, async (req, res) => {
+  if (!isValidOperation) {
+    return res.status(404).send({ error: "Invalid updates!" });
+  }
+
   try {
-    req.user.tokens = req.user.tokens.filter((token) => {
-      return token.token !== req.token;
-    });
+    const user = await User.findById(req.params.id);
+    updates.forEach((update) => (user[update] = req.body[update]));
 
-    await req.user.save();
+    await user.save();
 
-    res.send();
+    res.send(user);
   } catch (e) {
-    res.status(500).send();
+    console.log(e);
+    res.status(400).send();
   }
 });
+
+router.get("/:id/order", authAndSameIdOrAdmin, (req, res) => {});
+
+router.get("/:id/cart", authAndSameIdOrAdmin, (req, res) => {});
 
 module.exports = router;

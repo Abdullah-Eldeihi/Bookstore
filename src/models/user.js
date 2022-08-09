@@ -70,12 +70,11 @@ const userSchema = new mongoose.Schema({
   },
   address_line: {
     type: String,
-    required: true,
   },
   gender: {
     type: String,
     required: true,
-    enum: ["Male", "Female"],
+    enum: ["Male", "Female", "Other"],
   },
   tokens: [
     {
