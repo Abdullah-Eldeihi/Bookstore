@@ -7,9 +7,6 @@ const User = require("../models/user");
 const router = new express.Router();
 
 router.get("/:id", authAndSameIdOrAdmin, async (req, res) => {
-  if (!req.user.isAdmin) {
-    return res.send(req.user);
-  }
   try {
     const userParamId = await User.findById(req.params.id);
     res.send(userParamId);
@@ -58,7 +55,6 @@ router.patch("/:id", authAndSameIdOrAdmin, async (req, res) => {
 
     res.send(user);
   } catch (e) {
-    console.log(e);
     res.status(400).send();
   }
 });

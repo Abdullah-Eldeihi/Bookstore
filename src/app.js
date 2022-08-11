@@ -26,11 +26,10 @@ const port = process.env.PORT || 3000;
 
 //app uses (routers / json)
 app.use(express.json());
-app.use(loginRouter);
-app.use(signupRouter);
-app.use(logoutRouter);
-app.use(shopRouter);
-app.use(cartRouter);
+app.use("/login", loginRouter);
+app.use("/signup", signupRouter);
+app.use("/logout", logoutRouter);
+app.use("/shop", shopRouter);
 app.use("/admin", adminRouter);
 app.use("/users", userRouter);
 

@@ -6,7 +6,7 @@ const { creatorName } = require("../helper");
 // Instantiate the router.
 const router = new express.Router();
 
-router.post("/signup", async (req, res) => {
+router.post("/", async (req, res) => {
   // Declared the user variable at the beginning so the scope is all of the route.
   let user;
   // check if the body has isAdmin as true then checks if the body has adminCode field that equals the secret code.
@@ -37,7 +37,7 @@ router.post("/signup", async (req, res) => {
     res.status(400).send();
   }
 });
-router.get("/signup", (req, res) => {
+router.get("/", (req, res) => {
   res.render("signup", {
     creatorName,
   });

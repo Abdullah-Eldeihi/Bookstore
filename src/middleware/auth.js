@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const { creatorName } = require("../helper");
 
 const auth = async (req, res, next) => {
   try {
@@ -18,7 +19,9 @@ const auth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (e) {
-    res.status(401).send({ error: "Please authenticate." });
+    res.status(401).render("404page", {
+      creatorName,
+    });
   }
 };
 const authAdmin = (req, res, next) => {
