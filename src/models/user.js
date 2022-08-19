@@ -3,92 +3,95 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
 
-const userSchema = new mongoose.Schema({
-  first_name: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: [15, "First name too long."],
-    validate(value) {
-      if (!validator.isAlpha(value)) {
-        throw new Error("First name must contain only letters.");
-      }
-    },
-  },
-  last_name: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: [15, "Last name too long."],
-    validate(value) {
-      if (!validator.isAlpha(value)) {
-        throw new Error("Last name must only contain letters.");
-      }
-    },
-  },
-  email: {
-    type: String,
-    unique: true,
-    required: true,
-    trim: true,
-    lowercase: true,
-    validate(value) {
-      if (!validator.isEmail(value)) {
-        throw new Error("Not a valid email.");
-      }
-    },
-  },
-  password: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  phone_number: {
-    type: String,
-    required: true,
-    // minlength: [11, "Phone number too short."],
-    // maxlength: [11, "Phone number too long."],
-    trim: true,
-    validate: [/^[0-9]{11}$/, "Phone number must be 11 digits"],
-  },
-  country: {
-    type: String,
-    required: true,
-  },
-  city: {
-    type: String,
-    required: true,
-  },
-  birth_year: {
-    type: String,
-  },
-  birth_month: {
-    type: String,
-  },
-  birth_day: {
-    type: String,
-  },
-  address_line: {
-    type: String,
-  },
-  gender: {
-    type: String,
-    required: true,
-    enum: ["Male", "Female", "Other"],
-  },
-  tokens: [
-    {
-      token: {
-        type: String,
-        required: true,
+const userSchema = new mongoose.Schema(
+  {
+    first_name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: [15, "First name too long."],
+      validate(value) {
+        if (!validator.isAlpha(value)) {
+          throw new Error("First name must contain only letters.");
+        }
       },
     },
-  ],
-  isAdmin: {
-    type: Boolean,
-    default: false,
+    last_name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: [15, "Last name too long."],
+      validate(value) {
+        if (!validator.isAlpha(value)) {
+          throw new Error("Last name must only contain letters.");
+        }
+      },
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+      trim: true,
+      lowercase: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Not a valid email.");
+        }
+      },
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    phone_number: {
+      type: String,
+      required: true,
+      trim: true,
+      validate: [/^[0-9]{11}$/, "Phone number must be 11 digits"],
+    },
+    country: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    birth_year: {
+      type: String,
+    },
+    birth_month: {
+      type: String,
+    },
+    birth_day: {
+      type: String,
+    },
+    address_line: {
+      type: String,
+    },
+    gender: {
+      type: String,
+      required: true,
+      enum: ["Male", "Female", "Other"],
+    },
+    tokens: [
+      {
+        token: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
-});
+  {
+    timestamp: true,
+  }
+);
 
 // Find user by email and compare the hash password with the password given.
 userSchema.statics.findByCredentials = async (email, password) => {
@@ -109,7 +112,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
 
-  const token = jwt.sign({ _id: user._id.toString() }, "bookstoretoken");
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
   user.tokens = user.tokens.concat({ token });
   await user.save();
 

@@ -13,7 +13,7 @@ router.post("/", async (req, res) => {
   // The secret code should be replaced with a verification code that lasts for a certain duration just like how
   // you reset your password. The email that the code is sent to should be someone of a high status in the company.
   if (req.body.isAdmin === true) {
-    if (req.body.adminCode === "Thisissupersecret") {
+    if (req.body.adminCode === process.env.ADMIN_CODE) {
       delete req.body.adminCode;
       user = new User(req.body);
     } else {

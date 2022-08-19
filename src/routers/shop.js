@@ -11,24 +11,78 @@ const router = new express.Router();
 router.post("/", authAdmin, async (req, res) => {
   const newProduct = new Product(req.body);
   try {
-    const savedProduct = await Product.save();
+    const savedProduct = await newProduct.save();
     res.send(savedProduct);
   } catch (e) {
+    console.log(e);
     res.status(500).send();
   }
 });
 
 // Get /shop and render the view and send the information for it.
-router.get("/", (req, res) => {
-  res.render("shop", {
-    creatorName,
-  });
+router.get("/", async (req, res) => {
+  try {
+    let products;
+    let lowerBound;
+    let upperBound;
+    let pageNumber = req.query.pageNumber ? req.query.pageNumber : 1;
+    const limit = 20;
+    const docCount = await Product.countDocuments();
+    const totalPages = Math.ceil(docCount / limit);
+    if (pageNumber <= 0) {
+      pageNumber = 1;
+    }
+    if (Object.keys(req.query).length === 0) {
+      products = await Product.find({})
+        .populate({
+          path: "author",
+        })
+        .limit(limit)
+        .skip((pageNumber - 1) * limit);
+    } else {
+      if (req.query.priceRange) {
+        if (/^\d+[-]\d+$/i.test(req.query.priceRange)) {
+          req.query.priceRange = req.query.priceRange.split("-");
+          lowerBound = parseInt(req.query.priceRange[0]);
+          upperBound = parseInt(req.query.priceRange[1]);
+        } else {
+          return res.status(400).send();
+        }
+      }
+
+      products = await Product.find({
+        $or: [
+          { title: { $regex: ".*" + req.query.title + ".*" } },
+          {
+            genre: {
+              $in: [req.query.genre],
+            },
+          },
+          { isbn: { $regex: ".*" + req.query.isbn + ".*" } },
+          { price: { $gte: lowerBound, $lte: upperBound } },
+        ],
+      })
+        .populate({ path: "author" })
+        .limit(limit)
+        .skip((pageNumber - 1) * 20);
+      if (!products.length) {
+        return res.status(404).render("404page");
+      }
+    }
+    res.send({ products, pageNumber, totalPages });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send();
+  }
 });
 
 // Get a specific product in the shop.
 router.get("/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
+    await product.populate({
+      path: "author",
+    });
     res.send(product);
   } catch (e) {
     res.status(404).render("404page", {
@@ -40,7 +94,7 @@ router.get("/:id", async (req, res) => {
 // Update a specific product in the shop.
 router.patch("/:id", authAdmin, async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["title", "desc", "img", "categories", "price"];
+  const allowedUpdates = ["title", "desc", "img", "genre", "price", "isbn"];
   const isValidOperation = updates.every((update) =>
     allowedUpdates.includes(update)
   );
@@ -63,21 +117,20 @@ router.patch("/:id", authAdmin, async (req, res) => {
 
 // Delete a specific product in the shop.
 router.delete("/:id", authAdmin, async (req, res) => {
-  // Wrote two try catch statements to handle two different errors, one when the item doesn't exist
-  // and one when the db refuses to remove due to internal error.
-  // There has to be a way to do it in a single try catch statement can do an if condition based on that in the
-  // catch clause.
   try {
-    const product = await Product.findById(req.params.id);
-  } catch (e) {
-    res.status(404).render("404page", {
-      creatorName,
+    const product = await Product.findOne({
+      _id: req.params.id,
     });
-  }
-  try {
-    await product.remove();
+    if (!product) {
+      return res.status(404).render("404page", {
+        creatorName,
+      });
+    }
+    await product.deleteOne();
+
     res.send(product);
   } catch (e) {
+    console.log(e);
     res.status(500).send();
   }
 });

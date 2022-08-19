@@ -15,6 +15,8 @@ const shopRouter = require("./routers/shop");
 const cartRouter = require("./routers/cart");
 const adminRouter = require("./routers/admin");
 const userRouter = require("./routers/user");
+const authorRouter = require("./routers/author");
+const orderRouter = require("./routers/order");
 
 const { creatorName } = require("./helper");
 
@@ -22,7 +24,7 @@ const { creatorName } = require("./helper");
 const app = express();
 
 // Port
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 //app uses (routers / json)
 app.use(express.json());
@@ -32,6 +34,9 @@ app.use("/logout", logoutRouter);
 app.use("/shop", shopRouter);
 app.use("/admin", adminRouter);
 app.use("/users", userRouter);
+app.use("/author", authorRouter);
+app.use("/cart", cartRouter);
+app.use("/order", orderRouter);
 
 // Paths to directories.
 const publicDir = path.join(__dirname, "../public");
@@ -66,5 +71,5 @@ app.get("*", (req, res) => {
 
 // Listen on port 3000
 app.listen(port, () => {
-  console.log("Starting website on port 3000.");
+  console.log("Starting website on port " + port);
 });

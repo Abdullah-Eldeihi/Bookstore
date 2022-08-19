@@ -17,7 +17,7 @@ router.get("/:id", authAndSameIdOrAdmin, async (req, res) => {
 
 router.patch("/:id", authAndSameIdOrAdmin, async (req, res) => {
   if (req.body.isAdmin) {
-    if (req.body.adminCode !== "Thisissupersecret") {
+    if (req.body.adminCode !== process.env.ADMIN_CODE) {
       return res.status(403).send();
     } else {
       delete req.body.adminCode;
@@ -58,9 +58,5 @@ router.patch("/:id", authAndSameIdOrAdmin, async (req, res) => {
     res.status(400).send();
   }
 });
-
-router.get("/:id/order", authAndSameIdOrAdmin, (req, res) => {});
-
-router.get("/:id/cart", authAndSameIdOrAdmin, (req, res) => {});
 
 module.exports = router;
