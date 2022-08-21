@@ -4,7 +4,7 @@
 
 ### Only the sign up and the login page have a frontend, as this project is focused mainly on the backend.
 
-### There are 4 Mongoose models:
+### There are 5 Mongoose models:
 #### 1: Author.
 #### 2: User. 
 #### 3: Cart.
