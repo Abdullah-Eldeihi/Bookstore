@@ -19,7 +19,6 @@
 ### The main routes the project has are:
 #### 1: POST /signup for adding a new user.
 #### 2: POST /login for logging in.
-#### 3: /shop has everything to deal with the products. It has GET for a single product/all products/search for a product.
-#### It also has a POST to add product, patch a product or delete a product if you are an admin.
+#### 3: /shop has everything to deal with the products. It has GET for a single product/all products/search for a product. It also has a POST to add product, patch a product or delete a product if you are an admin.
 #### 4: /order contains everything related for the order of the user. Admins can access it and modify it.
 #### 5: /cart contains everything related for the cart of the user. Admins can also access it and modify it.
