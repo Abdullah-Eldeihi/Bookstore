@@ -24,7 +24,6 @@ const { creatorName } = require("./helper");
 const app = express();
 
 // Port
-const port = process.env.PORT;
 
 //app uses (routers / json)
 app.use(express.json());
@@ -69,7 +68,4 @@ app.get("*", (req, res) => {
   });
 });
 
-// Listen on port 3000
-app.listen(port, () => {
-  console.log("Starting website on port " + port);
-});
+module.exports = { app };

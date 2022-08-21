@@ -20,10 +20,8 @@ router.post("/", async (req, res) => {
       // If the secret code is not correct send a no permission http code.
       return res.status(403).send();
     }
-  } else if (req.body.adminCode) {
-    // If the user is not an admin and the body has an adminCode field delete it so it won't produce an error
-    // when creating the user with the body.
-    delete req.body.adminCode;
+  } else {
+    // else try to create the user with the body sent.
     user = new User(req.body);
   }
   try {
